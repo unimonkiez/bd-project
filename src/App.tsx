@@ -4,6 +4,7 @@ import './App.css';
 import oakSrc from './assets/uv.jpg';
 import PokemonDialog from './pokemon-dialog';
 import Response from './reponse';
+import Text from './text';
 
 
 enum phaseTypes {
@@ -20,25 +21,54 @@ interface IPhaseType {
 
 const phases: IPhaseType[] = [
   {
-    text: 'שלום אני יובל, בוא ספר לי על עצמך',
+    text: 'ברוך הבא!',
+    type: phaseTypes.textOnly,
+  },
+  {
+    text: 'את/ה אולי לא זוכר/ת כי שתית הרבה, אבל שמי הוא יובל.',
+    type: phaseTypes.textOnly,
+  },
+  {
+    text: 'אנשים הקרובים אלי פונים אלי בשם היובי החזק...',
+    type: phaseTypes.textOnly,
+  },
+  {
+    text: 'או העירקאי.',
+    type: phaseTypes.textOnly,
+  },
+  {
+    text: 'קודם כל, ספר/י לי קצת על עצמך.',
     type: phaseTypes.textOnly,
   },
   {
     options: [
       {
-        text: 'sdfds1'
+        text: 'גבר'
       },
       {
-        text: 'sdfds2'
+        text: 'גברת'
       },
     ],
-    text: 'sdfds',
+    text: 'האם אתה גבר?\n או האם את גברת?',
     type: phaseTypes.optionsQuestions,
   },
   {
-    text: 'sdfds?',
+    text: 'ומה שמך?',
     type: phaseTypes.textQuestion,
-  }
+  },
+  {
+    text: `נהדר!
+    עוד מעט סיימנו.`,
+    type: phaseTypes.textOnly,
+  },
+  {
+    text: 'יש מצב גם אני שתיתי לא מעט...',
+    type: phaseTypes.textOnly,
+  },
+  {
+    text: 'זה הוא הנכד שלי, האויב המושבע שלך, מה שמו?',
+    type: phaseTypes.textQuestion,
+  },
 ];
 const phasesLength = phases.length;
 
@@ -101,7 +131,7 @@ class App extends React.Component <{},IState> {
   private renderTextOnly(phase: IPhaseType) {
     return this.renderContainer(
       <PokemonDialog onPress={this.handleTextPress}>
-        {phase.text}
+        <Text value={phase.text} />
       </PokemonDialog>
     );
   }
@@ -109,7 +139,7 @@ class App extends React.Component <{},IState> {
   private renderTextQuestion(phase: IPhaseType) {
     return this.renderContainer(
       <PokemonDialog>
-        {phase.text}
+        <Text value={phase.text} />
         <form onSubmit={this.handleSubmit}>
           <input name="text" type="text" ref={this.handleInputRef} autoFocus={true} />
         </form>
@@ -124,7 +154,7 @@ class App extends React.Component <{},IState> {
   private renderOptionsQuestions(phase: IPhaseType) {
     return this.renderContainer(
       <PokemonDialog>
-        {phase.text}
+        <Text value={phase.text} />
       </PokemonDialog>,
       <React.Fragment>
         {phase.options && phase.options.map((option, index) => (
@@ -142,18 +172,19 @@ class App extends React.Component <{},IState> {
       answers,
     } = this.state;
 
+    const isBoy = answers[0].indexOfAnswer === 0;
+    const name = answers[1].text;
+    const nemsisName = answers[2].text;
+
     return this.renderContainer(
-      <Response>
-        {JSON.stringify(answers, null, 2)}
-      </Response>
+      <Response isBoy={isBoy} name={name} nemsisName={nemsisName} />
     );
   }
 
   private handleTextPress(): void {
-    const { phaseIndex, answers } = this.state;
+    const { phaseIndex } = this.state;
 
     this.setState({
-      answers: answers.concat({}),
       phaseIndex: phaseIndex + 1,
     });
   }

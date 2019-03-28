@@ -1,6 +1,7 @@
 import * as React from 'react';
 
 import PokemonDialog from './pokemon-dialog';
+import Text from './text';
 
 import './response.css';
 
@@ -9,13 +10,22 @@ import confettiSrc from './assets/confetti.png';
 
 
 interface IResponseProps {
-  max?: boolean,
+  isBoy: boolean,
+  name: string,
+  nemsisName: string,
 }
 
 class Response extends React.Component <IResponseProps> {
   public render() {
     const {
+      isBoy,
+      name,
+      nemsisName,
     } = this.props;
+
+    const text = `עכשיו ${isBoy ? 'אתה' : 'את'} ${isBoy ? 'מוכן' : 'מוכנה'} לצאת לעולם!
+    שמח שבאת ליום הולדתי ${name},
+    אני מקווה שיום אחד ${isBoy ? 'תביס' : 'תביסי'} את ${nemsisName}!`
 
     return (
       <React.Fragment>
@@ -28,7 +38,7 @@ class Response extends React.Component <IResponseProps> {
           </div>
         </div>
         <PokemonDialog>
-          text
+          <Text value={text} />
         </PokemonDialog>
       </React.Fragment>
     );
