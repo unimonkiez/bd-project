@@ -3,6 +3,8 @@ import './App.css';
 
 import oakSrc from './assets/uv.jpg';
 import PokemonDialog from './pokemon-dialog';
+import Response from './reponse';
+
 
 enum phaseTypes {
   textOnly,
@@ -109,7 +111,7 @@ class App extends React.Component <{},IState> {
       <PokemonDialog>
         {phase.text}
         <form onSubmit={this.handleSubmit}>
-          <input name="text" type="text" ref={this.handleInputRef} />
+          <input name="text" type="text" ref={this.handleInputRef} autoFocus={true} />
         </form>
       </PokemonDialog>,
       <PokemonDialog onPress={this.handleNextPress} max={false}>
@@ -141,9 +143,9 @@ class App extends React.Component <{},IState> {
     } = this.state;
 
     return this.renderContainer(
-      <PokemonDialog>
+      <Response>
         {JSON.stringify(answers, null, 2)}
-      </PokemonDialog>
+      </Response>
     );
   }
 

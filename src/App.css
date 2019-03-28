@@ -17,6 +17,21 @@
   align-items: center;
 }
 
+input {
+  position: absolute;
+  width: calc(100% - 30px);
+  margin: auto;
+  left: 15px;
+  right: 15px;
+  bottom: 15px;
+  font-family: "Pokemon GB", Arial, sans-serif;
+  border: 0px;
+  border-bottom: 3px solid black;
+  appearance: none;
+  outline: 0px;
+  font-size: 28px;
+}
+
 .image-container > img {
   width: 40vw;
   height: auto;
@@ -28,7 +43,6 @@
     height: 40vh;
   }
 }
-
 
 .content-container {
   position: absolute;
