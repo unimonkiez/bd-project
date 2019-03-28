@@ -1,0 +1,64 @@
+.pokemon_dialog {
+  box-sizing: content-box;
+  position: relative;
+  font-size: 24px;
+  font-family: "Pokemon GB", Arial, sans-serif;
+  border-radius: 2px;
+  padding: 8px;
+  padding-right: 24px;
+  margin-right: 7px;
+  width: calc(100% - 14px);
+  text-align: initial;
+  background: white;
+  box-sizing: border-box;
+  border: 2px solid white;
+  box-shadow: 0 2px 0 1px black,
+              inset 0 2px 0 1px black,
+              0 0 0 2px black,
+              inset 0 0 0 2px black;
+}
+
+.pokemon_dialog.max {
+  height: calc(100% - 7px);
+}
+
+.pokemon_dialog > i {
+  width: 0;
+  height: 0;
+  border: 5px solid transparent;
+  border-top-color: black;
+  bottom: 16px;
+  left: 15px;
+  animation: bounce 0.5s ease-in-out infinite alternate;
+  position: absolute;
+}
+
+.pokemon_dialog > img {
+  position: absolute;
+  background-color: white;
+  width: 15px;
+  height: 15px;
+}
+
+.pokemon_dialog > img:nth-of-type(1) {
+  top: -9px;
+  left: -9px;
+}
+.pokemon_dialog > img:nth-of-type(2) {
+  top: -9px;
+  right: -9px;
+}
+.pokemon_dialog > img:nth-of-type(3) {
+  bottom: -9px;
+  left: -9px;
+}
+.pokemon_dialog > img:nth-of-type(4) {
+  bottom: -9px;
+  right: -9px;
+}
+
+@keyframes bounce {
+  from { bottom: 13px; }
+  to { bottom: 16px; }
+}
+
