@@ -29,7 +29,7 @@ const phases: IPhaseType[] = [
     type: phaseTypes.textOnly,
   },
   {
-    text: 'אנשים הקרובים אלי פונים אלי בשם היובי החזק...',
+    text: 'אנשים הקרובים אלי פונים אלי בשם יובי החזק...',
     type: phaseTypes.textOnly,
   },
   {
