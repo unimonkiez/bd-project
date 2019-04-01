@@ -19,6 +19,13 @@ interface IPhaseType {
   options?: Array<{ text: string; }>,
 }
 
+interface IStateType {
+  phaseIndex: number,
+  setPhaseIndex: (phaseIndex: number) => void,
+  answers: any[],
+  setAnswers: (phaseIndex: any[]) => void,
+}
+
 const phases: IPhaseType[] = [
   {
     text: 'ברוך הבא!',
@@ -72,156 +79,132 @@ const phases: IPhaseType[] = [
 ];
 const phasesLength = phases.length;
 
-interface IState {
-  answers: any,
-  phaseIndex: number;
+const Main = () => {
+  const [ phaseIndex, setPhaseIndex ] = React.useState(0);
+  const [ answers, setAnswers ] = React.useState([]);
+
+  const state: IStateType = {
+    answers,
+    phaseIndex,
+    setAnswers: setAnswers as any,
+    setPhaseIndex,
+  };
+
+  if (phasesLength <= phaseIndex) {
+    return renderResponse(state);
+  }
+
+  const phase = phases[phaseIndex];
+  if (phase.type === phaseTypes.textQuestion) {
+    return renderTextQuestion(state, phase);
+  } else if (phase.type === phaseTypes.optionsQuestions) {
+    return renderOptionsQuestions(state, phase);
+  } else {
+    return renderTextOnly(state, phase);
+  }
 }
 
-class App extends React.Component <{},IState> {
-  private inputRef: HTMLInputElement | null;
-
-  public componentWillMount() {
-    this.state = {
-      answers: [],
-      phaseIndex: 0,
-    };
-    this.handleTextPress = this.handleTextPress.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.handleNextPress = this.handleNextPress.bind(this);
-
-    this.handleInputRef = this.handleInputRef.bind(this);
-  }
-
-  public render() {
-    const { phaseIndex } = this.state;
-
-    if (phasesLength <= phaseIndex) {
-      return this.renderResponse();
-    }
-
-    const phase = phases[phaseIndex];
-    if (phase.type === phaseTypes.textQuestion) {
-      return this.renderTextQuestion(phase);
-    } else if (phase.type === phaseTypes.optionsQuestions) {
-      return this.renderOptionsQuestions(phase);
-    } else {
-      return this.renderTextOnly(phase);
-    }
-      
-  }
-
-  private renderContainer(children: any, options?: any) {
-    return (
-      <div className="app">
-        <div className="image-container">
-          <img src={oakSrc} className="oak_img" />
+const renderContainer = (children: any, options?: any) => {
+  return (
+    <div className="app">
+      <div className="image-container">
+        <img src={oakSrc} className="oak_img" />
+      </div>
+      <div className="content-container">
+        <div className="options">
+          {options}
         </div>
-        <div className="content-container">
-          <div className="options">
-            {options}
-          </div>
-          <div className="content">
-            {children}
-          </div>
+        <div className="content">
+          {children}
         </div>
       </div>
-    );
-  }
+    </div>
+  );
+}
 
-  private renderTextOnly(phase: IPhaseType) {
-    return this.renderContainer(
-      <PokemonDialog onPress={this.handleTextPress}>
-        <Text value={phase.text} />
-      </PokemonDialog>
-    );
-  }
+const renderTextOnly = (state: IStateType, phase: IPhaseType) => {
+  return renderContainer(
+    <PokemonDialog onPress={() => handleTextPress(state)}>
+      <Text value={phase.text} />
+    </PokemonDialog>
+  );
+}
 
-  private renderTextQuestion(phase: IPhaseType) {
-    return this.renderContainer(
-      <PokemonDialog>
-        <Text value={phase.text} />
-        <form onSubmit={this.handleSubmit}>
-          <input name="text" type="text" ref={this.handleInputRef} autoFocus={true} />
-        </form>
-      </PokemonDialog>,
-      <PokemonDialog onPress={this.handleNextPress} max={false}>
-        הבא
-      </PokemonDialog>
-    );
-  }
-  
+const renderTextQuestion = (state: IStateType, phase: IPhaseType) => {
+  return renderContainer(
+    <PokemonDialog>
+      <Text value={phase.text} />
+      <form onSubmit={(e) => handleSubmit(e, state)}>
+        <input name="text" type="text" autoFocus={true} />
+      </form>
+    </PokemonDialog>,
+    <PokemonDialog onPress={() => handleNextPress(state)} max={false}>
+      הבא
+    </PokemonDialog>
+  );
+}
 
-  private renderOptionsQuestions(phase: IPhaseType) {
-    return this.renderContainer(
-      <PokemonDialog>
-        <Text value={phase.text} />
-      </PokemonDialog>,
-      <React.Fragment>
-        {phase.options && phase.options.map((option, index) => (
-          <PokemonDialog onPress={this.handleAnswerPress.bind(this, index)} max={false}>
-            {option.text}
-          </PokemonDialog>
-          ))
-        }
-      </React.Fragment>
-    );
-  }
 
-  private renderResponse() {
-    const { 
-      answers,
-    } = this.state;
+const renderOptionsQuestions = (state: IStateType, phase: IPhaseType) => {
+  return renderContainer(
+    <PokemonDialog>
+      <Text value={phase.text} />
+    </PokemonDialog>,
+    <React.Fragment>
+      {phase.options && phase.options.map((option, index) => (
+        <PokemonDialog onPress={() => handleAnswerPress(state, index)} max={false}>
+          {option.text}
+        </PokemonDialog>
+        ))
+      }
+    </React.Fragment>
+  );
+}
 
-    const isBoy = answers[0].indexOfAnswer === 0;
-    const name = answers[1].text;
-    const nemsisName = answers[2].text;
+const renderResponse = (state: IStateType) => {
+  const { 
+    answers,
+  } = state;
 
-    return this.renderContainer(
-      <Response isBoy={isBoy} name={name} nemsisName={nemsisName} />
-    );
-  }
+  const isBoy = answers[0].indexOfAnswer === 0;
+  const name = answers[1].text;
+  const nemsisName = answers[2].text;
 
-  private handleTextPress(): void {
-    const { phaseIndex } = this.state;
+  return renderContainer(
+    <Response isBoy={isBoy} name={name} nemsisName={nemsisName} />
+  );
+}
 
-    this.setState({
-      phaseIndex: phaseIndex + 1,
-    });
-  }
-  
-  private handleAnswerPress(indexOfAnswer: number): void {
-    const { phaseIndex, answers } = this.state;
+const handleTextPress = (state: IStateType): void  => {
+  const { phaseIndex, setPhaseIndex } = state;
 
-    this.setState({
-      answers: answers.concat({
-        indexOfAnswer,
-      }),
-      phaseIndex: phaseIndex + 1,
-    });
-  }
+  setPhaseIndex(phaseIndex + 1);
+}
 
-  private handleNextPress(): void {
-    const { inputRef } = this;
-    const { phaseIndex, answers } = this.state;
+const handleAnswerPress = (state: IStateType, indexOfAnswer: number): void => {
+  const { phaseIndex, setPhaseIndex, answers, setAnswers } = state;
 
-    if (inputRef) {
-      this.setState({
-        answers: answers.concat({
-          text: inputRef.value,
-        }),
-        phaseIndex: phaseIndex + 1,
-      });
-    }
-  }
+  setPhaseIndex(phaseIndex + 1);
+  setAnswers(answers.concat({
+    indexOfAnswer,
+  }));
+}
 
-  private handleSubmit(event: React.FormEvent<HTMLFormElement>): void {
-    event.preventDefault();
-    this.handleNextPress();
-  }
+const handleNextPress= (state: IStateType): void => {
+  const inputRef = document.querySelector('input');
+  const { phaseIndex, setPhaseIndex, answers, setAnswers } = state;
 
-  private handleInputRef(ref: HTMLInputElement | null) {
-    this.inputRef = ref;
+  if (inputRef) {
+    setPhaseIndex(phaseIndex + 1);
+    setAnswers(answers.concat({
+      text: inputRef.value,
+    }));
   }
 }
 
-export default App;
+const handleSubmit = (event: React.FormEvent<HTMLFormElement>, state: IStateType): void => {
+  event.preventDefault();
+  handleNextPress(state);
+}
+
+export default Main;
